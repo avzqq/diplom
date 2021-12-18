@@ -23,3 +23,18 @@ class User(UserMixin, db.Model):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+class RepairPeriod(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    loco_model = db.Column(db.String(10), nullable=False, index=True, unique=True)
+    m3 = db.Column(db.Integer, nullable=False)
+    cr1 = db.Column(db.Integer, nullable=False)
+    cr2 = db.Column(db.Integer, nullable=False)
+    cr3 = db.Column(db.Integer, nullable=False)
+    mr = db.Column(db.Integer, nullable=False)
+    overhaul = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'<{self.loco_model}:ТО3 {self.m3},ТР1 {self.cr1},ТР2 {self.cr2},ТР3 {self.cr3},СР {self.mr},КР {self.overhaul}>'
+
