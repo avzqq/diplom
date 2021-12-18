@@ -20,6 +20,44 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
+class DataStore(db.Model):
+    '''
+    m = maintenance = ТО
+    cr = current repair = текущий ремонт
+    mr = medium repair = средний ремонт
+    overhaul = капитальный ремонт'''
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    loco_model = db.Column(db.String(10), nullable=False)
+    loco_number = db.Column(db.String(10), nullable=False)
+
+    m3_last = db.Column(db.Date)
+    m3_next = db.Column(db.Date)
+
+    cr1_last = db.Column(db.Date)
+    cr1_next = db.Column(db.Date)
+    
+    cr2_last = db.Column(db.Date)
+    cr2_next = db.Column(db.Date)
+
+    cr3_last = db.Column(db.Date)
+    cr3_next = db.Column(db.Date)
+    
+    mr_last = db.Column(db.Date)
+    mr_next = db.Column(db.Date)
+    
+    overhaul_last = db.Column(db.Date)
+    overhaul_next = db.Column(db.Date)
+
+    notes = db.Column(db.Text)
+
+
+    def __repr__(self):
+        return f'<Storage table for locomotive {self.loco_model} {self.loco_number}>'
+
+
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
