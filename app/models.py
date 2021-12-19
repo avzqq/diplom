@@ -29,8 +29,8 @@ class DataStore(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    loco_model = db.Column(db.String(10), nullable=False)
-    loco_number = db.Column(db.String(10), nullable=False)
+    loco_model = db.Column(db.String(10), nullable=False, index=True)
+    loco_number = db.Column(db.String(10), nullable=False, index=True)
 
     m3_last = db.Column(db.Date)
     m3_next = db.Column(db.Date)
