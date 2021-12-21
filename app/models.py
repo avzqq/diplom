@@ -20,41 +20,35 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-class DataStore(db.Model):
-    '''
-    m = maintenance = ТО
-    cr = current repair = текущий ремонт
-    mr = medium repair = средний ремонт
-    overhaul = капитальный ремонт'''
-
+class SavedRepairForms(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    loco_model = db.Column(db.String(10), nullable=False, index=True)
+#   loco_model_id = db.Column(db.Integer, db.ForeignKey("repairperiod.id"))
     loco_number = db.Column(db.String(10), nullable=False, index=True)
 
-    m3_last = db.Column(db.Date)
-    m3_next = db.Column(db.Date)
+    last_three_maintenance = db.Column(db.Date)
+    next_three_maintenance = db.Column(db.Date)
 
-    cr1_last = db.Column(db.Date)
-    cr1_next = db.Column(db.Date)
+    last_three_current_repair = db.Column(db.Date)
+    next_three_current_repair = db.Column(db.Date)
     
-    cr2_last = db.Column(db.Date)
-    cr2_next = db.Column(db.Date)
+    last_two_current_repair = db.Column(db.Date)
+    next_two_current_repair = db.Column(db.Date)
 
-    cr3_last = db.Column(db.Date)
-    cr3_next = db.Column(db.Date)
+    last_one_current_repair = db.Column(db.Date)
+    next_one_current_repair = db.Column(db.Date)
     
-    mr_last = db.Column(db.Date)
-    mr_next = db.Column(db.Date)
-    
-    overhaul_last = db.Column(db.Date)
-    overhaul_next = db.Column(db.Date)
+    last_medium_repair = db.Column(db.Date)
+    next_medium_repair = db.Column(db.Date)
+
+    last_overhaul = db.Column(db.Date)
+    next_overhaul = db.Column(db.Date)
 
     notes = db.Column(db.Text)
-
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Storage table for locomotive {self.loco_model} {self.loco_number}>'
+        return f'<Repair form for {self.loco_model} {self.loco_number}. Created at {self.timestamp}>'
 
 
 
