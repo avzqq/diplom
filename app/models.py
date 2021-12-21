@@ -24,17 +24,24 @@ class User(UserMixin, db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
-class RepairPeriod(db.Model):
+class LocomotiveRepairPeriod(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    loco_model = db.Column(db.String(10), nullable=False, index=True, unique=True)
-    m3 = db.Column(db.Integer, nullable=False)
-    cr1 = db.Column(db.Integer, nullable=False)
-    cr2 = db.Column(db.Integer, nullable=False)
-    cr3 = db.Column(db.Integer, nullable=False)
-    mr = db.Column(db.Integer, nullable=False)
+    loco_model_name = db.Column(db.String(10), nullable=False, index=True, unique=True)
+    three_maintenance = db.Column(db.Integer, nullable=False)
+    one_current_repair = db.Column(db.Integer, nullable=False)
+    two_current_repair = db.Column(db.Integer, nullable=False)
+    three_current_repair = db.Column(db.Integer, nullable=False)
+    medium_repair = db.Column(db.Integer, nullable=False)
     overhaul = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f'<{self.loco_model}:ТО3 {self.m3},ТР1 {self.cr1},ТР2 {self.cr2},ТР3 {self.cr3},СР {self.mr},КР {self.overhaul}>'
+        return f'<{self.loco_model_name}:' \
+               f'ТО3 {self.three_maintenance}' \
+               f'ТР1 {self.one_current_repair}' \
+               f'ТР2 {self.two_current_repair}' \
+               f'ТР3 {self.three_current_repair}' \
+               f'СР {self.medium_repair}' \
+               f'КР {self.overhaul}>'
+
 
