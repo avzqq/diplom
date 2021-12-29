@@ -23,3 +23,25 @@ class User(UserMixin, db.Model):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+class LocomotiveRepairPeriod(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    loco_model_name = db.Column(db.String(10), nullable=False, index=True, unique=True)
+    three_maintenance = db.Column(db.Integer, nullable=False)
+    one_current_repair = db.Column(db.Integer, nullable=False)
+    two_current_repair = db.Column(db.Integer, nullable=False)
+    three_current_repair = db.Column(db.Integer, nullable=False)
+    medium_repair = db.Column(db.Integer, nullable=False)
+    overhaul = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        return f'<{self.loco_model_name}:' \
+               f'ТО3 {self.three_maintenance}' \
+               f'ТР1 {self.one_current_repair}' \
+               f'ТР2 {self.two_current_repair}' \
+               f'ТР3 {self.three_current_repair}' \
+               f'СР {self.medium_repair}' \
+               f'КР {self.overhaul}>'
+
+
