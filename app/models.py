@@ -45,3 +45,32 @@ class LocomotiveRepairPeriod(db.Model):
                f'КР {self.overhaul}>'
 
 
+class SavedRepairForms(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    loco_model_id = db.Column(db.Integer, db.ForeignKey("locomotive_repair_period.id"))
+    loco_number = db.Column(db.String(10), nullable=False, index=True)
+
+    last_three_maintenance = db.Column(db.Date)
+    next_three_maintenance = db.Column(db.Date)
+
+    last_three_current_repair = db.Column(db.Date)
+    next_three_current_repair = db.Column(db.Date)
+
+    last_two_current_repair = db.Column(db.Date)
+    next_two_current_repair = db.Column(db.Date)
+
+    last_one_current_repair = db.Column(db.Date)
+    next_one_current_repair = db.Column(db.Date)
+
+    last_medium_repair = db.Column(db.Date)
+    next_medium_repair = db.Column(db.Date)
+
+    last_overhaul = db.Column(db.Date)
+    next_overhaul = db.Column(db.Date)
+
+    notes = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Repair form for {self.loco_model} {self.loco_number}. Created at {self.timestamp}>'
