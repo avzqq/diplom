@@ -77,47 +77,47 @@ def create_model_record():
         filled_fields += 1
     flash(error)
 
-    if three_maintenance:
-        if isinstance(three_maintenance, int):
-            new_model.three_maintenance = abs(three_maintenance)
-            filled_fields += 1
-        else:
-            flash(f"{three_maintenance}: {type_error}")
+    try:
+        three_maintenance = int(three_maintenance)
+        new_model.three_maintenance = abs(three_maintenance)
+        filled_fields += 1
+    except ValueError:
+        flash(f"{three_maintenance}: {type_error}")
 
-    if one_current_repair:
-        if isinstance(one_current_repair, int):
-            new_model.one_current_repair = abs(one_current_repair)
-            filled_fields += 1
-        else:
-            flash(f"{one_current_repair}: {type_error}")
+    try:
+        one_current_repair = int(one_current_repair)
+        new_model.one_current_repair = abs(one_current_repair)
+        filled_fields += 1
+    except ValueError:
+        flash(f"{one_current_repair}: {type_error}")
 
-    if two_current_repair:
-        if isinstance(two_current_repair, int):
-            new_model.two_current_repair = abs(two_current_repair)
-            filled_fields += 1
-        else:
-            flash(f"{two_current_repair}: {type_error}")
+    try:
+        two_current_repair = int(two_current_repair)
+        new_model.two_current_repair = abs(two_current_repair)
+        filled_fields += 1
+    except ValueError:
+        flash(f"{two_current_repair}: {type_error}")
 
-    if three_current_repair:
-        if isinstance(three_current_repair, int):
-            new_model.three_current_repair = abs(three_current_repair)
-            filled_fields += 1
-        else:
-            flash(f"{three_current_repair}: {type_error}")
+    try:
+        three_current_repair = int(three_current_repair)
+        new_model.three_current_repair = abs(three_current_repair)
+        filled_fields += 1
+    except ValueError:
+        flash(f"{three_current_repair}: {type_error}")
 
-    if medium_repair:
-        if isinstance(medium_repair, int):
-            new_model.medium_repair = abs(medium_repair)
-            filled_fields += 1
-        else:
-            flash(f"{medium_repair}: {type_error}")
+    try:
+        medium_repair = int(medium_repair)
+        new_model.medium_repair = abs(medium_repair)
+        filled_fields += 1
+    except ValueError:
+        flash(f"{medium_repair}: {type_error}")
 
-    if overhaul:
-        if isinstance(overhaul, int):
-            new_model.overhaul = abs(overhaul)
-            filled_fields += 1
-        else:
-            flash(f"{overhaul}: {type_error}")
+    try:
+        overhaul = int(overhaul)
+        new_model.overhaul = abs(overhaul)
+        filled_fields += 1
+    except ValueError:
+        flash(f"{overhaul}: {type_error}")
 
     if len(list(request.json.values())) == filled_fields:
         is_recordable = True
@@ -129,6 +129,7 @@ def create_model_record():
         db.session.commit()
     else:
         flash("Ошибка записи в базу данных: одно из полей не заполненно или имеет недопустимое значение.")
+        print("Ошибка записи в базу данных: одно из полей не заполненно или имеет недопустимое значение.")
 
     return "Когда-нибудь здесь что-то появится."
 
