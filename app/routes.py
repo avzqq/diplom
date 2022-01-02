@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User
+from app.models import User, LocomotiveRepairPeriod
 
 
 @app.route('/')
@@ -50,3 +50,21 @@ def register():
         flash('Поздравляю, Вы зарегистрированы!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/get_models_list')
+def get_models_list():
+    list_of_models = []
+    for instance in LocomotiveRepairPeriod.query:
+        list_of_models.append([
+            instance.loco_model_name,
+            instance.three_maintenance,
+            instance.one_current_repair,
+            instance.two_current_repair,
+            instance.three_current_repair,
+            instance.medium_repair,
+            instance.overhaul
+            ])
+
+    return str(list_of_models)
+
