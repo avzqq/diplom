@@ -4,7 +4,7 @@ from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, SavedRepairForms
-
+from datetime import date, datetime
 
 @app.route('/')
 @app.route('/index')
@@ -74,5 +74,16 @@ def get_forms_list():
             form.notes,
             form.timestamp
             ])
+
+    # make it pretty    
+    for row in list_of_forms:
+        for i in row:
+             if type(i) == date:
+                row[row.index(i)] = str(i)
+             elif type(i) == datetime:
+                 row[row.index(i)] = i.strftime("%Y-%m-%d %H:%M:%S")
+             elif not bool(i):
+                 row[row.index(i)] = ""
+                 
     return str(list_of_forms)
 
