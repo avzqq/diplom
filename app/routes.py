@@ -62,6 +62,7 @@ def create_model_record():
     medium_repair = request.json.get("medium_repair")
     overhaul = request.json.get("overhaul")
    
+    filled_fields = 0
     error = None
     type_error = "Количество дней должно быть целым числом!"
     new_model = LocomotiveRepairPeriod()
@@ -73,54 +74,61 @@ def create_model_record():
         error = "Название модели должно быть строкой!"
     else:
         new_model.loco_model_name = loco_model_name
+        filled_fields += 1
     flash(error)
 
     if three_maintenance:
         if isinstance(three_maintenance, int):
             new_model.three_maintenance = abs(three_maintenance)
+            filled_fields += 1
         else:
             flash(f"{three_maintenance}: {type_error}")
 
     if one_current_repair:
         if isinstance(one_current_repair, int):
             new_model.one_current_repair = abs(one_current_repair)
+            filled_fields += 1
         else:
             flash(f"{one_current_repair}: {type_error}")
 
     if two_current_repair:
         if isinstance(two_current_repair, int):
             new_model.two_current_repair = abs(two_current_repair)
+            filled_fields += 1
         else:
             flash(f"{two_current_repair}: {type_error}")
 
     if three_current_repair:
         if isinstance(three_current_repair, int):
             new_model.three_current_repair = abs(three_current_repair)
+            filled_fields += 1
         else:
             flash(f"{three_current_repair}: {type_error}")
 
     if medium_repair:
         if isinstance(medium_repair, int):
             new_model.medium_repair = abs(medium_repair)
+            filled_fields += 1
         else:
             flash(f"{medium_repair}: {type_error}")
 
     if overhaul:
         if isinstance(overhaul, int):
             new_model.overhaul = abs(overhaul)
+            filled_fields += 1
         else:
             flash(f"{overhaul}: {type_error}")
 
-    is_recordable = bool(new_model.loco_model_name and new_model.three_maintenance and 
-                        new_model.one_current_repair and new_model.two_current_repair and 
-                        new_model.three_current_repair and new_model.medium_repair and
-                        new_model.overhaul
-                        )
+    if len(list(request.json.values())) == filled_fields:
+        is_recordable = True
+    else:
+        is_recordable = False
+
     if is_recordable:
         db.session.add(new_model)
         db.session.commit()
     else:
-        flash("Ошибка записи в базу данных: одно из полей имеет недопустимое значение")
+        flash("Ошибка записи в базу данных: одно из полей не заполненно или имеет недопустимое значение.")
 
     return "Когда-нибудь здесь что-то появится."
 
