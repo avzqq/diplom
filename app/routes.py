@@ -129,13 +129,12 @@ def create_model_record():
         db.session.commit()
     else:
         flash("Ошибка записи в базу данных: одно из полей не заполненно или имеет недопустимое значение.")
-        print("Ошибка записи в базу данных: одно из полей не заполненно или имеет недопустимое значение.")
 
     return "Когда-нибудь здесь что-то появится."
 
 
 @app.route('/edit_model_record', methods=['POST'])
-def edit__model_record():
+def edit_model_record():
     record_id = request.json.get("record_id")
     loco_model_name = request.json.get("loco_model_name")
     three_maintenance = request.json.get("three_maintenance")
@@ -162,41 +161,41 @@ def edit__model_record():
             old_model.loco_model_name = loco_model_name
         flash(error)
 
-    if three_maintenance:
-        if isinstance(three_maintenance, int):
-            old_model.three_maintenance = abs(three_maintenance)
-        else:
-            flash(f"{three_maintenance}: {type_error}")
+    try:
+        three_maintenance = int(three_maintenance)
+        old_model.three_maintenance = abs(three_maintenance)
+    except ValueError:
+        flash(f"{three_maintenance}: {type_error}")
 
-    if one_current_repair:
-        if isinstance(one_current_repair, int):
-            old_model.one_current_repair = abs(one_current_repair)
-        else:
-            flash(f"{one_current_repair}: {type_error}")
+    try:
+        one_current_repair = int(one_current_repair)
+        old_model.one_current_repair = abs(one_current_repair)
+    except ValueError:
+        flash(f"{one_current_repair}: {type_error}")
 
-    if two_current_repair:
-        if isinstance(two_current_repair, int):
-            old_model.two_current_repair = abs(two_current_repair)
-        else:
-            flash(f"{two_current_repair}: {type_error}")
+    try:
+        two_current_repair = int(two_current_repair)
+        old_model.two_current_repair = abs(two_current_repair)
+    except ValueError:
+        flash(f"{two_current_repair}: {type_error}")
 
-    if three_current_repair:
-        if isinstance(three_current_repair, int):
-            old_model.three_current_repair = abs(three_current_repair)
-        else:
-            flash(f"{three_current_repair}: {type_error}")
+    try:
+        three_current_repair = int(three_current_repair)
+        old_model.three_current_repair = abs(three_current_repair)
+    except ValueError:
+        flash(f"{three_current_repair}: {type_error}")
 
-    if medium_repair:
-        if isinstance(medium_repair, int):
-            old_model.medium_repair = abs(medium_repair)
-        else:
-            flash(f"{medium_repair}: {type_error}")
+    try:
+        medium_repair = int(medium_repair)
+        old_model.medium_repair = abs(medium_repair)
+    except ValueError:
+        flash(f"{medium_repair}: {type_error}")
 
-    if overhaul:
-        if isinstance(overhaul, int):
-            old_model.overhaul = abs(overhaul)
-        else:
-            flash(f"{overhaul}: {type_error}")
+    try:
+        overhaul = int(overhaul)
+        old_model.overhaul = abs(overhaul)
+    except ValueError:
+        flash(f"{overhaul_repair}: {type_error}")
 
     if is_recordable:
         db.session.commit()
