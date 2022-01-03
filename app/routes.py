@@ -75,7 +75,6 @@ def create_model_record():
     filled_fields = 0
     error = None
     new_model = LocomotiveRepairPeriod()
-    print(new_model)
     if new_model.query.filter_by(loco_model_name=loco_model_name).first():
         error = "Для модели {loco_model_name} запись уже существует."
         print("Для модели {loco_model_name} запись уже существует.")
