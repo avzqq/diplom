@@ -52,7 +52,7 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-def check_value(value): 
+def check_value(value):
     try:
         value = abs(int(value))
     except ValueError:
@@ -71,12 +71,14 @@ def create_model_record():
     three_current_repair = request.json.get("three_current_repair")
     medium_repair = request.json.get("medium_repair")
     overhaul = request.json.get("overhaul")
-   
+
     filled_fields = 0
     error = None
     new_model = LocomotiveRepairPeriod()
-    if LocomotiveRepairPeriod.query.filter_by(loco_model_name=loco_model_name).first():
+    print(new_model)
+    if new_model.query.filter_by(loco_model_name=loco_model_name).first():
         error = "Для модели {loco_model_name} запись уже существует."
+        print("Для модели {loco_model_name} запись уже существует.")
     elif loco_model_name == '':
         error = "Необходимо указать модель"
     elif not isinstance(loco_model_name, str):
@@ -116,7 +118,6 @@ def create_model_record():
         new_model.overhaul = validator
         filled_fields += 1
 
-
     if len(list(request.json.values())) == filled_fields:
         is_recordable = True
     else:
@@ -126,7 +127,7 @@ def create_model_record():
         db.session.add(new_model)
         db.session.commit()
     else:
-        flash("Ошибка записи в базу данных: одно из полей не заполненно или имеет недопустимое значение.")
+        flash("Ошибка записи: одно из полей имеет недопустимое значение.")
 
     return "Когда-нибудь здесь что-то появится."
 
@@ -141,14 +142,14 @@ def edit_model_record():
     three_current_repair = request.json.get("three_current_repair")
     medium_repair = request.json.get("medium_repair")
     overhaul = request.json.get("overhaul")
-   
+
     is_recordable = True
     error = None
-    type_error = "Количество дней должно быть целым числом!"
-    old_model = LocomotiveRepairPeriod.query.filter_by(id=record_id).first_or_404()
+    table = LocomotiveRepairPeriod
+    old_model = table.query.filter_by(id=record_id).first_or_404()
 
     if loco_model_name != old_model.loco_model_name:
-        if LocomotiveRepairPeriod.query.filter_by(loco_model_name=loco_model_name).first():
+        if table.query.filter_by(loco_model_name=loco_model_name).first():
             error = "Для модели {loco_model_name} запись уже существует."
             is_recordable = False
         elif loco_model_name == '':
@@ -197,9 +198,3 @@ def delete__model_record():
     db.session.commit()
 
     return f"Модель {model.loco_model_name} удалена."
-
-
-
-
-
-
