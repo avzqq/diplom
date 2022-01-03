@@ -52,6 +52,16 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
+def check_value(value): 
+    try:
+        value = abs(int(value))
+    except ValueError:
+        flash(f"{value}: количество дней должно быть целым числом.")
+        value = 0
+
+    return value
+
+
 @app.route('/create_model_record', methods=['POST'])
 def create_model_record():
     loco_model_name = request.json.get("loco_model_name")
@@ -64,7 +74,6 @@ def create_model_record():
    
     filled_fields = 0
     error = None
-    type_error = "Количество дней должно быть целым числом!"
     new_model = LocomotiveRepairPeriod()
     if LocomotiveRepairPeriod.query.filter_by(loco_model_name=loco_model_name).first():
         error = "Для модели {loco_model_name} запись уже существует."
@@ -77,47 +86,36 @@ def create_model_record():
         filled_fields += 1
     flash(error)
 
-    try:
-        three_maintenance = int(three_maintenance)
-        new_model.three_maintenance = abs(three_maintenance)
+    validator = check_value(three_maintenance)
+    if validator:
+        new_model.three_maintenance = validator
         filled_fields += 1
-    except ValueError:
-        flash(f"{three_maintenance}: {type_error}")
 
-    try:
-        one_current_repair = int(one_current_repair)
-        new_model.one_current_repair = abs(one_current_repair)
+    validator = check_value(one_current_repair)
+    if validator:
+        new_model.one_current_repair = validator
         filled_fields += 1
-    except ValueError:
-        flash(f"{one_current_repair}: {type_error}")
 
-    try:
-        two_current_repair = int(two_current_repair)
-        new_model.two_current_repair = abs(two_current_repair)
+    validator = check_value(two_current_repair)
+    if validator:
+        new_model.two_current_repair = validator
         filled_fields += 1
-    except ValueError:
-        flash(f"{two_current_repair}: {type_error}")
 
-    try:
-        three_current_repair = int(three_current_repair)
-        new_model.three_current_repair = abs(three_current_repair)
+    validator = check_value(three_current_repair)
+    if validator:
+        new_model.three_current_repair = validator
         filled_fields += 1
-    except ValueError:
-        flash(f"{three_current_repair}: {type_error}")
 
-    try:
-        medium_repair = int(medium_repair)
-        new_model.medium_repair = abs(medium_repair)
+    validator = check_value(medium_repair)
+    if validator:
+        new_model.medium_repair = validator
         filled_fields += 1
-    except ValueError:
-        flash(f"{medium_repair}: {type_error}")
 
-    try:
-        overhaul = int(overhaul)
-        new_model.overhaul = abs(overhaul)
+    validator = check_value(overhaul)
+    if validator:
+        new_model.overhaul = validator
         filled_fields += 1
-    except ValueError:
-        flash(f"{overhaul}: {type_error}")
+
 
     if len(list(request.json.values())) == filled_fields:
         is_recordable = True
@@ -161,41 +159,29 @@ def edit_model_record():
             old_model.loco_model_name = loco_model_name
         flash(error)
 
-    try:
-        three_maintenance = int(three_maintenance)
-        old_model.three_maintenance = abs(three_maintenance)
-    except ValueError:
-        flash(f"{three_maintenance}: {type_error}")
+    validator = check_value(three_maintenance)
+    if validator:
+        old_model.three_maintenance = validator
 
-    try:
-        one_current_repair = int(one_current_repair)
-        old_model.one_current_repair = abs(one_current_repair)
-    except ValueError:
-        flash(f"{one_current_repair}: {type_error}")
+    validator = check_value(one_current_repair)
+    if validator:
+        old_model.one_current_repair = validator
 
-    try:
-        two_current_repair = int(two_current_repair)
-        old_model.two_current_repair = abs(two_current_repair)
-    except ValueError:
-        flash(f"{two_current_repair}: {type_error}")
+    validator = check_value(two_current_repair)
+    if validator:
+        old_model.two_current_repair = validator
 
-    try:
-        three_current_repair = int(three_current_repair)
-        old_model.three_current_repair = abs(three_current_repair)
-    except ValueError:
-        flash(f"{three_current_repair}: {type_error}")
+    validator = check_value(three_current_repair)
+    if validator:
+        old_model.three_current_repair = validator
 
-    try:
-        medium_repair = int(medium_repair)
-        old_model.medium_repair = abs(medium_repair)
-    except ValueError:
-        flash(f"{medium_repair}: {type_error}")
+    validator = check_value(medium_repair)
+    if validator:
+        old_model.medium_repair = validator
 
-    try:
-        overhaul = int(overhaul)
-        old_model.overhaul = abs(overhaul)
-    except ValueError:
-        flash(f"{overhaul_repair}: {type_error}")
+    validator = check_value(overhaul)
+    if validator:
+        old_model.overhaul = validator
 
     if is_recordable:
         db.session.commit()

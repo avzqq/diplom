@@ -130,3 +130,6 @@ dmypy.json
 
 *.db
 .idea/
+
+# fake data for tests
+generate_data.py
