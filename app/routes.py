@@ -213,3 +213,21 @@ def get_models_list():
             ])
 
     return str(list_of_models)
+
+
+@app.route('/get_models_list')
+def get_models_list():
+    list_of_models = []
+    for instance in LocomotiveRepairPeriod.query:
+        list_of_models.append([
+            instance.loco_model_name,
+            instance.three_maintenance,
+            instance.one_current_repair,
+            instance.two_current_repair,
+            instance.three_current_repair,
+            instance.medium_repair,
+            instance.overhaul
+            ])
+
+    return str(list_of_models)
+
