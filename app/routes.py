@@ -76,8 +76,7 @@ def create_model_record():
     error = None
     new_model = LocomotiveRepairPeriod()
     if new_model.query.filter_by(loco_model_name=loco_model_name).first():
-        error = "Для модели {loco_model_name} запись уже существует."
-        print("Для модели {loco_model_name} запись уже существует.")
+        error = f"Для модели {loco_model_name} запись уже существует."
     elif loco_model_name == '':
         error = "Необходимо указать модель"
     elif not isinstance(loco_model_name, str):
@@ -149,7 +148,7 @@ def edit_model_record():
 
     if loco_model_name != old_model.loco_model_name:
         if table.query.filter_by(loco_model_name=loco_model_name).first():
-            error = "Для модели {loco_model_name} запись уже существует."
+            error = f"Для модели {loco_model_name} запись уже существует."
             is_recordable = False
         elif loco_model_name == '':
             error = "Необходимо указать модель"
