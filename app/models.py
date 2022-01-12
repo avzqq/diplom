@@ -73,4 +73,4 @@ class SavedRepairForms(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Repair form for {self.loco_model} {self.loco_number}. Created at {self.timestamp}>'
+        return f'<Repair form for {self.loco_model_id} {self.loco_number}. Created at {self.timestamp}>'
