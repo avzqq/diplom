@@ -3,7 +3,8 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User, LocomotiveRepairPeriod
+from app.models import User, LocomotiveRepairPeriod, SavedRepairForms
+from datetime import date, datetime
 
 
 @app.route('/')
@@ -50,8 +51,8 @@ def register():
         flash('Поздравляю, Вы зарегистрированы!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
-
-
+  
+  
 def check_value(value):
     try:
         value = abs(int(value))
@@ -214,3 +215,39 @@ def get_models_list():
 
     return str(list_of_models)
 
+  
+@app.route('/get_forms_list')
+def get_forms_list():
+    list_of_forms = []
+    for form in SavedRepairForms.query:
+        list_of_forms.append([
+            form.loco_model_id,
+            form.loco_number,
+            form.last_three_maintenance,
+            form.next_three_maintenance,
+            form.last_three_current_repair,
+            form.next_three_current_repair,
+            form.last_two_current_repair,
+            form.next_two_current_repair,
+            form.last_one_current_repair,
+            form.next_one_current_repair,
+            form.last_medium_repair,
+            form.next_medium_repair,
+            form.last_overhaul,
+            form.next_overhaul,
+            form.notes,
+            form.timestamp
+            ])
+
+    # make it pretty    
+    for row in list_of_forms:
+        for i in row:
+             if type(i) == date:
+                row[row.index(i)] = str(i)
+             elif type(i) == datetime:
+                 row[row.index(i)] = i.strftime("%Y-%m-%d %H:%M:%S")
+             elif not bool(i):
+                 row[row.index(i)] = ""
+                 
+    return str(list_of_forms)
+  
