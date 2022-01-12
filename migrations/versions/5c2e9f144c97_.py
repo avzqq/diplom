@@ -1,22 +1,24 @@
-import csv
+"""Filling DB with initial data
+
+Revision ID: 5c2e9f144c97
+Revises: 8cdedfb602e9
+Create Date: 2022-01-12 17:43:20.172117
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+from app.models import LocomotiveRepairPeriod
+from app import db
+
+# revision identifiers, used by Alembic.
+revision = '5c2e9f144c97'
+down_revision = '8cdedfb602e9'
+branch_labels = None
+depends_on = None
 
 
-def data_initialization():
-    """ У каждого вида ремонта есть от одного до трёх вариантов периодичности.
-    Например, у ТР-1 это либо 225, либо 180 суток.
-    У некоторых тепловозов совпадают варианты ТР-1, ТР-2 и т.д. и я собираю
-    их в группу.
-    Например, у ТЭМ и ТЭМ2У текущий ремонт 1 проводится раз в 225 суток,
-    поэтому они идут в группу "а". У ТГМ4(A) и ТГМ4 текущий ремонт 1
-    проводится раз в 180 суток, поэтому они идут в группу "б" и т.д.
-    Функция делает четыре  шага:
-    1. Создаёт модели тепловозов в виде словарей, пока только с названием.
-    2. Разбивает их на группы.
-    3. Описывает виды ремонтов с возможными вариантами периодичности.
-    4. Каждому тепловозу определенной группы записывает подходящий вариант
-        периодичности для каждого ремонта.
-    В конце упаковывает все тепловозы в один список для возвращения.
-    """
+def upgrade():
     tam = {"loco_model_name": "ТЭМ"}
     tam2y = {"loco_model_name": "ТЭМ2У"}
     tam2m = {"loco_model_name": "ТЭМ2М"}
@@ -68,18 +70,18 @@ def data_initialization():
         loco["overhaul"] = overhaul["1"]
 
     all_data = [*group_a, *group_b, *group_c]
-    keys = group_a[0].keys()
-    return all_data, keys
+    for row in all_data:
+        model = LocomotiveRepairPeriod(
+            loco_model_name=row["loco_model_name"],
+            three_maintenance=row["three_maintenance"],
+            one_current_repair=row["one_current_repair"],
+            two_current_repair=row["two_current_repair"],
+            three_current_repair=row["three_current_repair"],
+            medium_repair=row["medium_repair"], overhaul=row["overhaul"]
+        )
+        db.session.add(model)
+        db.session.commit()
 
 
-def generate_csv():
-    list_of_models, fields = data_initialization()
-    with open('initial_data.csv', 'w', encoding='UTF-8') as f:
-        writer = csv.DictWriter(f, fields, delimiter=';')
-        writer.writeheader()
-        for model in list_of_models:
-            writer.writerow(model)
-
-
-if __name__ == "__main__":
-    generate_csv()
+def downgrade():
+    pass
