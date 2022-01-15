@@ -251,3 +251,8 @@ def get_forms_list():
                  
     return str(list_of_forms)
   
+
+@app.route("/loco_model_table")
+def loco_model_table():
+    all_data = LocomotiveRepairPeriod.query.all()
+    return render_template("loco_model_page.html", models=all_data)
