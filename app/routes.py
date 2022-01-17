@@ -59,7 +59,8 @@ def check_value(value):
     except ValueError:
         flash(f"{value}: количество дней должно быть целым числом.", "error")
         value = 0
-
+    if value == 0:
+        flash("Период проведения ремонта не может быть равен нулю.", "error")
     return value
 
 
@@ -191,7 +192,7 @@ def edit_model_record():
 
         if is_recordable:
             db.session.commit()
-            flash(f"Модель успешно изменена.", "success")
+            flash(f"Корректно заполненные поля были перезаписаны.", "success")
 
         return redirect(url_for("loco_model_table"))
 
