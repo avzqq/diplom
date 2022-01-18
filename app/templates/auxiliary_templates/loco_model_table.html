@@ -9,7 +9,7 @@
     <th>КР</th>
     <th>Действие</th>
   </tr>
-  {% for row in models %}
+  {% for row in models.items %}
   <tr>
     <td>{{row.loco_model_name}}</td>
     <td>{{row.three_maintenance}}</td>
@@ -27,5 +27,4 @@
   {% include "auxiliary_templates/modal_edit_model.html" %}
 
   {% endfor %}
-
 </table>

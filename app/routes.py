@@ -5,6 +5,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, LocomotiveRepairPeriod, SavedRepairForms
 from datetime import date, datetime
+from config import ROWS_PER_PAGE
 
 
 @app.route('/')
@@ -262,5 +263,8 @@ def get_forms_list():
 
 @app.route("/loco_model_table", methods=["GET", "POST"])
 def loco_model_table():
-    all_data = LocomotiveRepairPeriod.query.all()
+    page = request.args.get("page", 1, type=int)
+
+    all_data = LocomotiveRepairPeriod.query.paginate(
+        page=page, per_page=ROWS_PER_PAGE)
     return render_template("loco_model_page.html", models=all_data)
