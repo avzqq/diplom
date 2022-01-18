@@ -9,6 +9,8 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    role = db.Column(db.Integer, db.ForeignKey("user_role.id"),
+                     nullable=False, default=1)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -24,10 +26,12 @@ class User(UserMixin, db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
+
 class LocomotiveRepairPeriod(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    loco_model_name = db.Column(db.String(10), nullable=False, index=True, unique=True)
+    loco_model_name = db.Column(db.String(10), nullable=False, index=True,
+                                unique=True)
     three_maintenance = db.Column(db.Integer, nullable=False)
     one_current_repair = db.Column(db.Integer, nullable=False)
     two_current_repair = db.Column(db.Integer, nullable=False)
@@ -48,7 +52,8 @@ class LocomotiveRepairPeriod(db.Model):
 class SavedRepairForms(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    loco_model_id = db.Column(db.Integer, db.ForeignKey("locomotive_repair_period.id"))
+    loco_model_id = db.Column(db.Integer,
+                              db.ForeignKey("locomotive_repair_period.id"))
     loco_number = db.Column(db.String(10), nullable=False, index=True)
 
     last_three_maintenance = db.Column(db.Date)
@@ -73,4 +78,15 @@ class SavedRepairForms(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Repair form for {self.loco_model_id} {self.loco_number}. Created at {self.timestamp}>'
+        return f'''<Repair form for {self.loco_model_id} {self.loco_number}.
+                Created at {self.timestamp}>'''
+
+
+class UserRole(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    role_name = db.Column(db.String(20), nullable=False)
+    role_codename = db.Column(db.String(20), nullable=False, index=True)
+
+    def __repr__(self):
+        return f'''<User role. id: {self.id}; name: {self.role_name},
+                codename: {self.role_codename}'''
