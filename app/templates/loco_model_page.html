@@ -6,8 +6,9 @@
             <div class="col md-12">
                 <div class="well text-center"><h5><b>Периоды ремонтов тепловозов. Единица измерения: сутки</b></h5></div>
                 <div class="jumbotron p-3">
-                    <h2>Управление <b>моделями</b>  <button type="button"  class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Добавить новую модель</button> </h2>
-
+                    <div class="flex-container">
+                        <div><h2>Управление <b>моделями</b></div> <div><button type="button"  class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Добавить новую модель</button> </h2></div>
+                    </div>  
                     {% include "auxiliary_templates/loco_model_table.html" %}
 
                 </div>
