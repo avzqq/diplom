@@ -256,25 +256,25 @@ def get_forms_list():
 def create_repair_form():
 
     try:
-        loco_number = int(request.json.get("loco_number"))
+        loco_number = int(request.form["loco_number"])
     except ValueError:
         return {'Error': 'Номер модели тепловоза должен быть числовым.'}
 
-    loco_model_id = request.json.get("loco_model_id")
-    last_three_maintenance = request.json.get("last_three_maintenance")
-    next_three_maintenance = request.json.get("next_three_maintenance")
-    last_three_current_repair = request.json.get("last_three_current_repair")
-    next_three_current_repair = request.json.get("next_three_current_repair")
-    last_two_current_repair = request.json.get("last_two_current_repair")
-    next_two_current_repair = request.json.get("next_two_current_repair")
-    last_one_current_repair = request.json.get("last_one_current_repair")
-    next_one_current_repair = request.json.get("next_one_current_repair")
-    last_medium_repair = request.json.get("last_medium_repair")
-    next_medium_repair = request.json.get("next_medium_repair")
-    last_overhaul = request.json.get("last_overhaul")
-    next_overhaul = request.json.get("next_overhaul")
-    notes = request.json.get("notes")
-    timestamp = request.json.get("timestamp")
+    loco_model_id = request.form["loco_model_id"]
+    last_three_maintenance = request.form["last_three_maintenance"]
+    next_three_maintenance = request.form["next_three_maintenance"]
+    last_three_current_repair = request.form["last_three_current_repair"]
+    next_three_current_repair = request.form["next_three_current_repair"]
+    last_two_current_repair = request.form["last_two_current_repair"]
+    next_two_current_repair = request.form["next_two_current_repair"]
+    last_one_current_repair = request.form["last_one_current_repair"]
+    next_one_current_repair = request.form["next_one_current_repair"]
+    last_medium_repair = request.form["last_medium_repair"]
+    next_medium_repair = request.form["next_medium_repair"]
+    last_overhaul = request.form["last_overhaul"]
+    next_overhaul = request.form["next_overhaul"]
+    notes = request.form["notes"]
+    timestamp = request.form["timestamp"]
 
     loco_model = LocomotiveRepairPeriod.query.get(loco_model_id)
     if not loco_model:
@@ -359,16 +359,16 @@ def edit_repair_form():
     except ValueError:
         return {'Error': 'Номер модели тепловоза должен быть числовым.'}
 
-    repair_form_id = request.json.get("repair_form_id")
-    loco_model_id = request.json.get("loco_model_id")
-    last_three_maintenance = request.json.get("last_three_maintenance")
-    last_three_current_repair = request.json.get("last_three_current_repair")
-    last_two_current_repair = request.json.get("last_two_current_repair")
-    last_one_current_repair = request.json.get("last_one_current_repair")
-    last_medium_repair = request.json.get("last_medium_repair")
-    last_overhaul = request.json.get("last_overhaul")
-    notes = request.json.get("notes")
-    timestamp = request.json.get("timestamp")
+    repair_form_id = request.form["repair_form_id"]
+    loco_model_id = request.form["loco_model_id"]
+    last_three_maintenance = request.form["last_three_maintenance"]
+    last_three_current_repair = request.form["last_three_current_repair"]
+    last_two_current_repair = request.form["last_two_current_repair"]
+    last_one_current_repair = request.form["last_one_current_repair"]
+    last_medium_repair = request.form["last_medium_repair"]
+    last_overhaul = request.form["last_overhaul"]
+    notes = request.form["notes"]
+    timestamp = request.form["timestamp"]
 
     old_form = SavedRepairForms.query.filter_by(id=repair_form_id).first_or_404()
     old_form.notes = notes
@@ -440,7 +440,7 @@ def edit_repair_form():
 
 @app.route('/delete_repair_form', methods=['POST'])
 def delete_repair_form():
-    repair_form_id = request.json.get("repair_form_id")
+    repair_form_id = request.form["repair_form_id"]
     repair_form = SavedRepairForms.query.filter_by(id=repair_form_id).first_or_404()
     db.session.delete(repair_form)
     db.session.commit()
