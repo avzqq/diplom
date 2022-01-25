@@ -1,6 +1,16 @@
 <!doctype html>
-<html>
-    <head>
+<html lang="ru">
+  <head>
+<style>
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+</style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta charset="UTF-8">
+
         {% if title %}
         <title>{{ title }} - здесь_текст</title>
         {% else %}
@@ -17,16 +27,43 @@
             <a href="{{ url_for('logout') }}">Выход</a>
             {% endif %}
         </div>
+
         <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
+        {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
         <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
+          {% for error in errors %}
+              <div class="alert alert-danger alert-dismissable" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                    <li>{{ error }}</li>
+              </div>
+          {% endfor %}
         </ul>
-        {% endif %}
-        {% endwith %}
+      {% endif %}
+      {% endwith %}
+
+      {% with success_messages = get_flashed_messages(category_filter=["success"]) %}
+      {% if success_messages %}
+      <ul>
+        {% for success_message in success_messages %}
+            <div class="alert alert-success alert-dismissable" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                      <span aria-hidden="true">x</span>
+                  </button>
+                  <li>{{ success_message }}</li>
+            </div>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% endwith %}
+
         {% block content %}{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
     </body>
 </html>

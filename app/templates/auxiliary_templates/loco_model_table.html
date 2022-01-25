@@ -1,0 +1,30 @@
+<table class="table table-hover table-striped">
+  <tr>
+    <th>Модель</th>
+    <th>ТО-3</th>
+    <th>ТР-1</th>
+    <th>ТР-2</th>
+    <th>ТР-3</th>
+    <th>СР</th>
+    <th>КР</th>
+    <th>Действие</th>
+  </tr>
+  {% for row in models.items %}
+  <tr>
+    <td>{{row.loco_model_name}}</td>
+    <td>{{row.three_maintenance}}</td>
+    <td>{{row.one_current_repair}}</td>
+    <td>{{row.two_current_repair}}</td>
+    <td>{{row.three_current_repair}}</td>
+    <td>{{row.medium_repair}}</td>
+    <td>{{row.overhaul}}</td>
+    <td>
+      <a href="/edit_model_record" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Изменить</a>
+      <a href="/delete_model_record/{{row.id}}" class="btn btn-danger btn-xs" onclick="return confirm('Подтвердите удаление')">Удалить</a>
+    </td>
+  </tr>  
+
+  {% include "auxiliary_templates/modal_edit_model.html" %}
+
+  {% endfor %}
+</table>
