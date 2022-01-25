@@ -1,8 +1,8 @@
-"""Filling DB with initial data
+"""Fill locomotive_repair_period table with initial data.
 
-Revision ID: 5c2e9f144c97
-Revises: 8cdedfb602e9
-Create Date: 2022-01-12 17:43:20.172117
+Revision ID: 0ec1f621b940
+Revises: 5c27b8115c46
+Create Date: 2022-01-18 12:03:15.996943
 
 """
 from alembic import op
@@ -12,8 +12,8 @@ from app.models import LocomotiveRepairPeriod
 from app import db
 
 # revision identifiers, used by Alembic.
-revision = '5c2e9f144c97'
-down_revision = '8cdedfb602e9'
+revision = '0ec1f621b940'
+down_revision = '5c27b8115c46'
 branch_labels = None
 depends_on = None
 
@@ -81,7 +81,6 @@ def upgrade():
         )
         db.session.add(model)
         db.session.commit()
-
 
 def downgrade():
     pass
