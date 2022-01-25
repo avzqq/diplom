@@ -299,8 +299,6 @@ def create_repair_form():
         new_repair_form.next_two_current_repair = new_repair_form.last_overhaul + timedelta(loco_model.two_current_repair)
         new_repair_form.next_one_current_repair = new_repair_form.last_overhaul + timedelta(loco_model.one_current_repair)
         new_repair_form.next_three_maintenance = new_repair_form.last_overhaul + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_medium_repair:
         new_repair_form.last_medium_repair = datetime.strptime(last_medium_repair, '%d/%m/%Y')
@@ -309,8 +307,6 @@ def create_repair_form():
         new_repair_form.next_two_current_repair = new_repair_form.last_medium_repair + timedelta(loco_model.two_current_repair)
         new_repair_form.next_one_current_repair = new_repair_form.last_medium_repair + timedelta(loco_model.one_current_repair)
         new_repair_form.next_three_maintenance = new_repair_form.last_medium_repair + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_three_current_repair:
         new_repair_form.last_three_current_repair = datetime.strptime(last_three_current_repair, '%d/%m/%Y')
@@ -318,29 +314,21 @@ def create_repair_form():
         new_repair_form.next_two_current_repair = new_repair_form.last_three_current_repair + timedelta(loco_model.two_current_repair)
         new_repair_form.next_one_current_repair = new_repair_form.last_three_current_repair + timedelta(loco_model.one_current_repair)
         new_repair_form.next_three_maintenance = new_repair_form.last_three_current_repair + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_two_current_repair:
         new_repair_form.last_two_current_repair = datetime.strptime(last_two_current_repair, '%d/%m/%Y')
         new_repair_form.next_two_current_repair = new_repair_form.last_two_current_repair + timedelta(loco_model.two_current_repair)
         new_repair_form.next_one_current_repair = new_repair_form.last_two_current_repair + timedelta(loco_model.one_current_repair)
         new_repair_form.next_three_maintenance = new_repair_form.last_two_current_repair + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_one_current_repair:
         new_repair_form.last_one_current_repair = datetime.strptime(last_one_current_repair, '%d/%m/%Y')
         new_repair_form.next_one_current_repair = new_repair_form.last_one_current_repair + timedelta(loco_model.one_current_repair)
         new_repair_form.next_three_maintenance = new_repair_form.last_one_current_repair + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_three_maintenance:
         new_repair_form.last_three_maintenance = datetime.strptime(last_three_maintenance, '%d/%m/%Y')
         new_repair_form.next_three_maintenance = new_repair_form.last_three_maintenance + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if new_repair_form.query.filter_by(loco_number=loco_number).first():
         return {'error': 'Форма для этого тепловоза уже создана.'}
@@ -355,7 +343,7 @@ def create_repair_form():
 def edit_repair_form():
 
     try:
-        loco_number = int(request.json.get("loco_number"))
+        loco_number = int(request.form["loco_number"])
     except ValueError:
         return {'Error': 'Номер модели тепловоза должен быть числовым.'}
 
@@ -391,8 +379,6 @@ def edit_repair_form():
         old_form.next_two_current_repair = old_form.last_overhaul + timedelta(loco_model.two_current_repair)
         old_form.next_one_current_repair = old_form.last_overhaul + timedelta(loco_model.one_current_repair)
         old_form.next_three_maintenance = old_form.last_overhaul + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_medium_repair:
         old_form.last_medium_repair = datetime.strptime(last_medium_repair, '%d/%m/%Y')
@@ -401,8 +387,6 @@ def edit_repair_form():
         old_form.next_two_current_repair = old_form.last_medium_repair + timedelta(loco_model.two_current_repair)
         old_form.next_one_current_repair = old_form.last_medium_repair + timedelta(loco_model.one_current_repair)
         old_form.next_three_maintenance = old_form.last_medium_repair + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_three_current_repair:
         old_form.last_three_current_repair = datetime.strptime(last_three_current_repair, '%d/%m/%Y')
@@ -410,29 +394,21 @@ def edit_repair_form():
         old_form.next_two_current_repair = old_form.last_three_current_repair + timedelta(loco_model.two_current_repair)
         old_form.next_one_current_repair = old_form.last_three_current_repair + timedelta(loco_model.one_current_repair)
         old_form.next_three_maintenance = old_form.last_three_current_repair + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_two_current_repair:
         old_form.last_two_current_repair = datetime.strptime(last_two_current_repair, '%d/%m/%Y')
         old_form.next_two_current_repair = old_form.last_two_current_repair + timedelta(loco_model.two_current_repair)
         old_form.next_one_current_repair = old_form.last_two_current_repair + timedelta(loco_model.one_current_repair)
         old_form.next_three_maintenance = old_form.last_two_current_repair + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_one_current_repair:
         old_form.last_one_current_repair = datetime.strptime(last_one_current_repair, '%d/%m/%Y')
         old_form.next_one_current_repair = old_form.last_one_current_repair + timedelta(loco_model.one_current_repair)
         old_form.next_three_maintenance = old_form.last_one_current_repair + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     if last_three_maintenance:
         old_form.last_three_maintenance = datetime.strptime(last_three_maintenance, '%d/%m/%Y')
         old_form.next_three_maintenance = old_form.last_three_maintenance + timedelta(loco_model.three_maintenance)
-    else:
-        pass
 
     db.session.commit()
 
