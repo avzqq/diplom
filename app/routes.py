@@ -5,6 +5,8 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, LocomotiveRepairPeriod, SavedRepairForms
 from datetime import date, datetime, timedelta
+from datetime import date, datetime
+from config import ROWS_PER_PAGE
 
 
 @app.route('/')
@@ -22,7 +24,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
-            flash('Некорректный логин или пароль.')
+            flash('Некорректный логин или пароль.', "error")
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
@@ -48,7 +50,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Поздравляю, Вы зарегистрированы!')
+        flash('Поздравляю, Вы зарегистрированы!', "success")
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -57,136 +59,96 @@ def check_value(value):
     try:
         value = abs(int(value))
     except ValueError:
-        flash(f"{value}: количество дней должно быть целым числом.")
+        flash(f"{value}: количество дней должно быть целым числом.", "error")
         value = 0
-
+    if value == 0:
+        flash("Период проведения ремонта не может быть равен нулю.", "error")
     return value
 
 
 @app.route('/create_model_record', methods=['POST'])
 def create_model_record():
-    loco_model_name = request.json.get("loco_model_name")
-    three_maintenance = request.json.get("three_maintenance")
-    one_current_repair = request.json.get("one_current_repair")
-    two_current_repair = request.json.get("two_current_repair")
-    three_current_repair = request.json.get("three_current_repair")
-    medium_repair = request.json.get("medium_repair")
-    overhaul = request.json.get("overhaul")
+    if request.method == "POST":
+        loco_model_name = request.form["loco_model_name"]
+        three_maintenance = request.form["three_maintenance"]
+        one_current_repair = request.form["one_current_repair"]
+        two_current_repair = request.form["two_current_repair"]
+        three_current_repair = request.form["three_current_repair"]
+        medium_repair = request.form["medium_repair"]
+        overhaul = request.form["overhaul"]
 
-    filled_fields = 0
-    error = None
-    new_model = LocomotiveRepairPeriod()
-    if new_model.query.filter_by(loco_model_name=loco_model_name).first():
-        error = f"Для модели {loco_model_name} запись уже существует."
-    elif loco_model_name == '':
-        error = "Необходимо указать модель"
-    elif not isinstance(loco_model_name, str):
-        error = "Название модели должно быть строкой!"
-    else:
-        new_model.loco_model_name = loco_model_name
-        filled_fields += 1
-    flash(error)
-
-    validator = check_value(three_maintenance)
-    if validator:
-        new_model.three_maintenance = validator
-        filled_fields += 1
-
-    validator = check_value(one_current_repair)
-    if validator:
-        new_model.one_current_repair = validator
-        filled_fields += 1
-
-    validator = check_value(two_current_repair)
-    if validator:
-        new_model.two_current_repair = validator
-        filled_fields += 1
-
-    validator = check_value(three_current_repair)
-    if validator:
-        new_model.three_current_repair = validator
-        filled_fields += 1
-
-    validator = check_value(medium_repair)
-    if validator:
-        new_model.medium_repair = validator
-        filled_fields += 1
-
-    validator = check_value(overhaul)
-    if validator:
-        new_model.overhaul = validator
-        filled_fields += 1
-
-    if len(list(request.json.values())) == filled_fields:
-        is_recordable = True
-    else:
-        is_recordable = False
-
-    if is_recordable:
-        db.session.add(new_model)
-        db.session.commit()
-    else:
-        flash("Ошибка записи: одно из полей имеет недопустимое значение.")
-
-    return "Когда-нибудь здесь что-то появится."
-
-
-@app.route('/edit_model_record', methods=['POST'])
-def edit_model_record():
-    record_id = request.json.get("record_id")
-    loco_model_name = request.json.get("loco_model_name")
-    three_maintenance = request.json.get("three_maintenance")
-    one_current_repair = request.json.get("one_current_repair")
-    two_current_repair = request.json.get("two_current_repair")
-    three_current_repair = request.json.get("three_current_repair")
-    medium_repair = request.json.get("medium_repair")
-    overhaul = request.json.get("overhaul")
-
-    is_recordable = True
-    error = None
-    table = LocomotiveRepairPeriod
-    old_model = table.query.filter_by(id=record_id).first_or_404()
-
-    if loco_model_name != old_model.loco_model_name:
-        if table.query.filter_by(loco_model_name=loco_model_name).first():
+        filled_fields = 0
+        error = None
+        new_model = LocomotiveRepairPeriod()
+        if new_model.query.filter_by(loco_model_name=loco_model_name).first():
             error = f"Для модели {loco_model_name} запись уже существует."
-            is_recordable = False
         elif loco_model_name == '':
             error = "Необходимо указать модель"
         elif not isinstance(loco_model_name, str):
             error = "Название модели должно быть строкой!"
         else:
-            old_model.loco_model_name = loco_model_name
-        flash(error)
+            new_model.loco_model_name = loco_model_name
+            filled_fields += 1
+        if error:
+            flash(error, "error")
 
-    validator = check_value(three_maintenance)
-    if validator:
-        old_model.three_maintenance = validator
+        validator = check_value(three_maintenance)
+        if validator:
+            new_model.three_maintenance = validator
+            filled_fields += 1
 
-    validator = check_value(one_current_repair)
-    if validator:
-        old_model.one_current_repair = validator
+        validator = check_value(one_current_repair)
+        if validator:
+            new_model.one_current_repair = validator
+            filled_fields += 1
 
-    validator = check_value(two_current_repair)
-    if validator:
-        old_model.two_current_repair = validator
+        validator = check_value(two_current_repair)
+        if validator:
+            new_model.two_current_repair = validator
+            filled_fields += 1
 
-    validator = check_value(three_current_repair)
-    if validator:
-        old_model.three_current_repair = validator
+        validator = check_value(three_current_repair)
+        if validator:
+            new_model.three_current_repair = validator
+            filled_fields += 1
 
-    validator = check_value(medium_repair)
-    if validator:
-        old_model.medium_repair = validator
+        validator = check_value(medium_repair)
+        if validator:
+            new_model.medium_repair = validator
+            filled_fields += 1
 
-    validator = check_value(overhaul)
-    if validator:
-        old_model.overhaul = validator
+        validator = check_value(overhaul)
+        if validator:
+            new_model.overhaul = validator
+            filled_fields += 1
+        if len(request.form) == filled_fields:
+            is_recordable = True
+        else:
+            is_recordable = False
 
-    if is_recordable:
-        db.session.commit()
+        if is_recordable:
+            db.session.add(new_model)
+            db.session.commit()
+            flash(f"Модель {new_model.loco_model_name} успешно добавлена.",
+                  "success")
+        else:
+            flash("Ошибка записи: недопустимое значение поля.",
+                 "error")
 
-    return "Когда-нибудь здесь что-то появится."
+        return redirect(url_for("loco_model_table"))
+
+
+@app.route('/edit_model_record', methods=['GET', 'POST'])
+def edit_model_record():
+    if request.method == "POST":
+        record_id = request.form["record_id"]
+        loco_model_name = request.form["loco_model_name"]
+        three_maintenance = request.form["three_maintenance"]
+        one_current_repair = request.form["one_current_repair"]
+        two_current_repair = request.form["two_current_repair"]
+        three_current_repair = request.form["three_current_repair"]
+        medium_repair = request.form["medium_repair"]
+        overhaul = request.form["overhaul"]
 
 
 @app.route('/delete_model_record', methods=['POST'])
@@ -194,9 +156,63 @@ def delete_model_record():
     record_id = request.json.get("record_id")
     model = LocomotiveRepairPeriod.query.filter_by(id=record_id).first_or_404()
     db.session.delete(model)
-    db.session.commit()
+        is_recordable = True
+        error = None
+        table = LocomotiveRepairPeriod
+        old_model = table.query.filter_by(id=record_id).first_or_404()
 
-    return f"Модель {model.loco_model_name} удалена."
+        if loco_model_name != old_model.loco_model_name:
+            if table.query.filter_by(loco_model_name=loco_model_name).first():
+                error = f"Для модели {loco_model_name} запись уже существует."
+                is_recordable = False
+            elif loco_model_name == '':
+                error = "Необходимо указать модель"
+            elif not isinstance(loco_model_name, str):
+                error = "Название модели должно быть строкой!"
+            else:
+                old_model.loco_model_name = loco_model_name
+            if error:
+                flash(error, "error")
+
+        validator = check_value(three_maintenance)
+        if validator:
+            old_model.three_maintenance = validator
+
+        validator = check_value(one_current_repair)
+        if validator:
+            old_model.one_current_repair = validator
+
+        validator = check_value(two_current_repair)
+        if validator:
+            old_model.two_current_repair = validator
+
+        validator = check_value(three_current_repair)
+        if validator:
+            old_model.three_current_repair = validator
+
+        validator = check_value(medium_repair)
+        if validator:
+            old_model.medium_repair = validator
+
+        validator = check_value(overhaul)
+        if validator:
+            old_model.overhaul = validator
+
+        if is_recordable:
+            db.session.commit()
+            flash(f"Корректно заполненные поля были перезаписаны.", "success")
+
+        return redirect(url_for("loco_model_table"))
+
+
+@app.route('/delete_model_record/<id>/', methods=['GET', 'POST'])
+def delete__model_record(id):
+    record = LocomotiveRepairPeriod.query.get(id)
+    db.session.delete(record)
+    db.session.commit()
+    flash(f"Модель {record.loco_model_name} удалена.", "success")
+    
+    return redirect(url_for("loco_model_table"))
 
 
 @app.route('/get_models_list')
@@ -251,7 +267,7 @@ def get_forms_list():
 
     return str(list_of_forms)
 
-
+  
 @app.route('/create_repair_form', methods=['POST'])
 def create_repair_form():
 
@@ -422,3 +438,12 @@ def delete_repair_form():
     db.session.commit()
 
     return f"Форма удалена."
+  
+
+@app.route("/loco_model_table", methods=["GET", "POST"])
+def loco_model_table():
+    page = request.args.get("page", 1, type=int)
+
+    all_data = LocomotiveRepairPeriod.query.paginate(
+        page=page, per_page=ROWS_PER_PAGE)
+    return render_template("loco_model_page.html", models=all_data)
