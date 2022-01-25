@@ -4,6 +4,7 @@ from werkzeug.urls import url_parse
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, LocomotiveRepairPeriod, SavedRepairForms
+from datetime import date, datetime, timedelta
 from datetime import date, datetime
 from config import ROWS_PER_PAGE
 
@@ -52,8 +53,8 @@ def register():
         flash('Поздравляю, Вы зарегистрированы!', "success")
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
-  
-  
+
+
 def check_value(value):
     try:
         value = abs(int(value))
@@ -149,6 +150,12 @@ def edit_model_record():
         medium_repair = request.form["medium_repair"]
         overhaul = request.form["overhaul"]
 
+
+@app.route('/delete_model_record', methods=['POST'])
+def delete_model_record():
+    record_id = request.json.get("record_id")
+    model = LocomotiveRepairPeriod.query.filter_by(id=record_id).first_or_404()
+    db.session.delete(model)
         is_recordable = True
         error = None
         table = LocomotiveRepairPeriod
@@ -224,7 +231,7 @@ def get_models_list():
 
     return str(list_of_models)
 
-  
+
 @app.route('/get_forms_list')
 def get_forms_list():
     list_of_forms = []
@@ -257,8 +264,180 @@ def get_forms_list():
                  row[row.index(i)] = i.strftime("%Y-%m-%d %H:%M:%S")
              elif not bool(i):
                  row[row.index(i)] = ""
-                 
+
     return str(list_of_forms)
+
+  
+@app.route('/create_repair_form', methods=['POST'])
+def create_repair_form():
+
+    try:
+        loco_number = int(request.form["loco_number"])
+    except ValueError:
+        return {'Error': 'Номер модели тепловоза должен быть числовым.'}
+
+    loco_model_id = request.form["loco_model_id"]
+    last_three_maintenance = request.form["last_three_maintenance"]
+    next_three_maintenance = request.form["next_three_maintenance"]
+    last_three_current_repair = request.form["last_three_current_repair"]
+    next_three_current_repair = request.form["next_three_current_repair"]
+    last_two_current_repair = request.form["last_two_current_repair"]
+    next_two_current_repair = request.form["next_two_current_repair"]
+    last_one_current_repair = request.form["last_one_current_repair"]
+    next_one_current_repair = request.form["next_one_current_repair"]
+    last_medium_repair = request.form["last_medium_repair"]
+    next_medium_repair = request.form["next_medium_repair"]
+    last_overhaul = request.form["last_overhaul"]
+    next_overhaul = request.form["next_overhaul"]
+    notes = request.form["notes"]
+    timestamp = request.form["timestamp"]
+
+    loco_model = LocomotiveRepairPeriod.query.get(loco_model_id)
+    if not loco_model:
+        return {'Error': 'такой модели не существует.'}
+
+    new_repair_form = SavedRepairForms(
+            loco_model_id=loco_model_id,
+            loco_number=loco_number,
+            notes=notes
+        )
+
+    try:
+        new_repair_form.notes = notes
+    except TypeError:
+        pass
+
+    if last_overhaul:
+        new_repair_form.last_overhaul = datetime.strptime(last_overhaul, '%d/%m/%Y')
+        new_repair_form.next_overhaul = new_repair_form.last_overhaul + timedelta(loco_model.overhaul)
+        new_repair_form.next_medium_repair = new_repair_form.last_overhaul + timedelta(loco_model.medium_repair)
+        new_repair_form.next_three_current_repair = new_repair_form.last_overhaul + timedelta(loco_model.three_current_repair)
+        new_repair_form.next_two_current_repair = new_repair_form.last_overhaul + timedelta(loco_model.two_current_repair)
+        new_repair_form.next_one_current_repair = new_repair_form.last_overhaul + timedelta(loco_model.one_current_repair)
+        new_repair_form.next_three_maintenance = new_repair_form.last_overhaul + timedelta(loco_model.three_maintenance)
+
+    if last_medium_repair:
+        new_repair_form.last_medium_repair = datetime.strptime(last_medium_repair, '%d/%m/%Y')
+        new_repair_form.next_medium_repair = new_repair_form.last_medium_repair + timedelta(loco_model.medium_repair)
+        new_repair_form.next_three_current_repair = new_repair_form.last_medium_repair + timedelta(loco_model.three_current_repair)
+        new_repair_form.next_two_current_repair = new_repair_form.last_medium_repair + timedelta(loco_model.two_current_repair)
+        new_repair_form.next_one_current_repair = new_repair_form.last_medium_repair + timedelta(loco_model.one_current_repair)
+        new_repair_form.next_three_maintenance = new_repair_form.last_medium_repair + timedelta(loco_model.three_maintenance)
+
+    if last_three_current_repair:
+        new_repair_form.last_three_current_repair = datetime.strptime(last_three_current_repair, '%d/%m/%Y')
+        new_repair_form.next_three_current_repair = new_repair_form.last_three_current_repair + timedelta(loco_model.three_current_repair)
+        new_repair_form.next_two_current_repair = new_repair_form.last_three_current_repair + timedelta(loco_model.two_current_repair)
+        new_repair_form.next_one_current_repair = new_repair_form.last_three_current_repair + timedelta(loco_model.one_current_repair)
+        new_repair_form.next_three_maintenance = new_repair_form.last_three_current_repair + timedelta(loco_model.three_maintenance)
+
+    if last_two_current_repair:
+        new_repair_form.last_two_current_repair = datetime.strptime(last_two_current_repair, '%d/%m/%Y')
+        new_repair_form.next_two_current_repair = new_repair_form.last_two_current_repair + timedelta(loco_model.two_current_repair)
+        new_repair_form.next_one_current_repair = new_repair_form.last_two_current_repair + timedelta(loco_model.one_current_repair)
+        new_repair_form.next_three_maintenance = new_repair_form.last_two_current_repair + timedelta(loco_model.three_maintenance)
+
+    if last_one_current_repair:
+        new_repair_form.last_one_current_repair = datetime.strptime(last_one_current_repair, '%d/%m/%Y')
+        new_repair_form.next_one_current_repair = new_repair_form.last_one_current_repair + timedelta(loco_model.one_current_repair)
+        new_repair_form.next_three_maintenance = new_repair_form.last_one_current_repair + timedelta(loco_model.three_maintenance)
+
+    if last_three_maintenance:
+        new_repair_form.last_three_maintenance = datetime.strptime(last_three_maintenance, '%d/%m/%Y')
+        new_repair_form.next_three_maintenance = new_repair_form.last_three_maintenance + timedelta(loco_model.three_maintenance)
+
+    if new_repair_form.query.filter_by(loco_number=loco_number).first():
+        return {'error': 'Форма для этого тепловоза уже создана.'}
+    else:
+        db.session.add(new_repair_form)
+        db.session.commit()
+
+    return f'Форма для тепловоза {loco_model_id} {loco_number} создана.'
+
+
+@app.route('/edit_repair_form', methods=['POST'])
+def edit_repair_form():
+
+    try:
+        loco_number = int(request.form["loco_number"])
+    except ValueError:
+        return {'Error': 'Номер модели тепловоза должен быть числовым.'}
+
+    repair_form_id = request.form["repair_form_id"]
+    loco_model_id = request.form["loco_model_id"]
+    last_three_maintenance = request.form["last_three_maintenance"]
+    last_three_current_repair = request.form["last_three_current_repair"]
+    last_two_current_repair = request.form["last_two_current_repair"]
+    last_one_current_repair = request.form["last_one_current_repair"]
+    last_medium_repair = request.form["last_medium_repair"]
+    last_overhaul = request.form["last_overhaul"]
+    notes = request.form["notes"]
+    timestamp = request.form["timestamp"]
+
+    old_form = SavedRepairForms.query.filter_by(id=repair_form_id).first_or_404()
+    old_form.notes = notes
+
+    loco_model = LocomotiveRepairPeriod.query.get(loco_model_id)
+    if not loco_model:
+        return {'Error': 'такой модели не существует.'}
+
+    if loco_number != old_form.loco_number:
+        if SavedRepairForms.query.filter_by(loco_number=loco_number).first():
+            return f'Форма для тепловоза {loco_number} уже существует.'
+        else:
+            old_form.loco_number = loco_number
+
+    if last_overhaul:
+        old_form.last_overhaul = datetime.strptime(last_overhaul, '%d/%m/%Y')
+        old_form.next_overhaul = old_form.last_overhaul + timedelta(loco_model.overhaul)
+        old_form.next_medium_repair = old_form.last_overhaul + timedelta(loco_model.medium_repair)
+        old_form.next_three_current_repair = old_form.last_overhaul + timedelta(loco_model.three_current_repair)
+        old_form.next_two_current_repair = old_form.last_overhaul + timedelta(loco_model.two_current_repair)
+        old_form.next_one_current_repair = old_form.last_overhaul + timedelta(loco_model.one_current_repair)
+        old_form.next_three_maintenance = old_form.last_overhaul + timedelta(loco_model.three_maintenance)
+
+    if last_medium_repair:
+        old_form.last_medium_repair = datetime.strptime(last_medium_repair, '%d/%m/%Y')
+        old_form.next_medium_repair = old_form.last_medium_repair + timedelta(loco_model.medium_repair)
+        old_form.next_three_current_repair = old_form.last_medium_repair + timedelta(loco_model.three_current_repair)
+        old_form.next_two_current_repair = old_form.last_medium_repair + timedelta(loco_model.two_current_repair)
+        old_form.next_one_current_repair = old_form.last_medium_repair + timedelta(loco_model.one_current_repair)
+        old_form.next_three_maintenance = old_form.last_medium_repair + timedelta(loco_model.three_maintenance)
+
+    if last_three_current_repair:
+        old_form.last_three_current_repair = datetime.strptime(last_three_current_repair, '%d/%m/%Y')
+        old_form.next_three_current_repair = old_form.last_three_current_repair + timedelta(loco_model.three_current_repair)
+        old_form.next_two_current_repair = old_form.last_three_current_repair + timedelta(loco_model.two_current_repair)
+        old_form.next_one_current_repair = old_form.last_three_current_repair + timedelta(loco_model.one_current_repair)
+        old_form.next_three_maintenance = old_form.last_three_current_repair + timedelta(loco_model.three_maintenance)
+
+    if last_two_current_repair:
+        old_form.last_two_current_repair = datetime.strptime(last_two_current_repair, '%d/%m/%Y')
+        old_form.next_two_current_repair = old_form.last_two_current_repair + timedelta(loco_model.two_current_repair)
+        old_form.next_one_current_repair = old_form.last_two_current_repair + timedelta(loco_model.one_current_repair)
+        old_form.next_three_maintenance = old_form.last_two_current_repair + timedelta(loco_model.three_maintenance)
+
+    if last_one_current_repair:
+        old_form.last_one_current_repair = datetime.strptime(last_one_current_repair, '%d/%m/%Y')
+        old_form.next_one_current_repair = old_form.last_one_current_repair + timedelta(loco_model.one_current_repair)
+        old_form.next_three_maintenance = old_form.last_one_current_repair + timedelta(loco_model.three_maintenance)
+
+    if last_three_maintenance:
+        old_form.last_three_maintenance = datetime.strptime(last_three_maintenance, '%d/%m/%Y')
+        old_form.next_three_maintenance = old_form.last_three_maintenance + timedelta(loco_model.three_maintenance)
+
+    db.session.commit()
+
+    return "запись изменена."
+
+@app.route('/delete_repair_form', methods=['POST'])
+def delete_repair_form():
+    repair_form_id = request.form["repair_form_id"]
+    repair_form = SavedRepairForms.query.filter_by(id=repair_form_id).first_or_404()
+    db.session.delete(repair_form)
+    db.session.commit()
+
+    return f"Форма удалена."
   
 
 @app.route("/loco_model_table", methods=["GET", "POST"])
