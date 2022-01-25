@@ -1,5 +1,25 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col md-12">
+                <div class="well text-center"><h5><b>Учёт ремонтов тепловозов</b></h5></div>
+                <div class="jumbotron p-3">
+                    <div class="flex-container">
+                        <div><h2>Управление <b>формами</b></div> <div><button type="button"  class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Добавить форму учёта</button> </h2></div>
+                    </div>  
+                    {% include "auxiliary_templates/loco_forms_table.html" %}
+
+                </div>
+
+                    {% if forms.items %}
+                    {% include "auxiliary_templates/loco_forms_table_pagination.html" %}
+                    {% endif %}
+
+                    {% include "auxiliary_templates/modal_add_form.html" %}
+                    
+            </div>
+        </div>
+    </div>
 {% endblock %}

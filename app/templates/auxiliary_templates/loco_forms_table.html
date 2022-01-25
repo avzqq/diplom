@@ -1,0 +1,46 @@
+<table class="table table-hover table-striped">
+  <tr>
+    <th>Модель</th>
+    <th>Номер</th>
+    <th>ТО-3</th>
+    <th>ТР-1</th>
+    <th>ТР-2</th>
+    <th>ТР-3</th>
+    <th>СР</th>
+    <th>КР</th>
+    <th>Примечания</th>
+    <th>Действие</th>
+  </tr>
+  {% for row in forms.items %}
+  <tr>
+    <td>{{row.loco_model_id}}</td>
+    <td>{{row.loco_number}}</td>
+    <td>{% if row.last_three_maintenance %} {{row.last_three_maintenance}} {% endif %}</td>
+    <td>{{row.last_one_current_repair}}</td>
+    <td>{{row.last_two_current_repair}}</td>
+    <td>{{row.last_three_current_repair}}</td>
+    <td>{{row.last_medium_repair}}</td>
+    <td>{{row.last_overhaul}}</td>
+    <td>{{row.notes}}</td>
+    <td>
+      <a href="/edit_repair_form" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Изменить</a>
+      <a href="/delete_repair_form/{{row.id}}" class="btn btn-danger btn-xs" onclick="return confirm('Подтвердите удаление')">Удалить</a>
+    </td>
+  </tr>  
+  <tr>
+    <td></td>
+    <td></td>
+    <td>{{row.next_three_maintenance}}</td>
+    <td>{{row.next_one_current_repair}}</td>
+    <td>{{row.next_two_current_repair}}</td>
+    <td>{{row.next_three_current_repair}}</td>
+    <td>{{row.next_medium_repair}}</td>
+    <td>{{row.next_overhaul}}</td>
+    <td></td>
+    <td></td>
+  </tr>
+
+  {% include "auxiliary_templates/modal_edit_form.html" %}
+
+  {% endfor %}
+</table>

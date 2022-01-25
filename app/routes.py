@@ -9,11 +9,15 @@ from datetime import date, datetime
 from config import ROWS_PER_PAGE
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=["GET", "POST"])
+@app.route('/index', methods=["GET", "POST"])
 @login_required
 def index():
-    return render_template('index.html', title='Home')
+    page = request.args.get("page", 1, type=int)
+
+    all_data = SavedRepairForms.query.paginate(
+        page=page, per_page=ROWS_PER_PAGE)
+    return render_template("index.html", forms=all_data)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -215,27 +219,35 @@ def create_repair_form():
     try:
         loco_number = int(request.form["loco_number"])
     except ValueError:
-        return {'Error': 'Номер модели тепловоза должен быть числовым.'}
+        flash('Номер модели тепловоза должен быть числовым.', "error")
+        return redirect(url_for("index"))
 
-    loco_model_id = request.form["loco_model_id"]
-    last_three_maintenance = request.form["last_three_maintenance"]
-    next_three_maintenance = request.form["next_three_maintenance"]
-    last_three_current_repair = request.form["last_three_current_repair"]
-    next_three_current_repair = request.form["next_three_current_repair"]
-    last_two_current_repair = request.form["last_two_current_repair"]
-    next_two_current_repair = request.form["next_two_current_repair"]
-    last_one_current_repair = request.form["last_one_current_repair"]
-    next_one_current_repair = request.form["next_one_current_repair"]
-    last_medium_repair = request.form["last_medium_repair"]
-    next_medium_repair = request.form["next_medium_repair"]
-    last_overhaul = request.form["last_overhaul"]
-    next_overhaul = request.form["next_overhaul"]
-    notes = request.form["notes"]
-    timestamp = request.form["timestamp"]
+    loco_model_id = request.form.get("loco_model_id")
+    last_three_maintenance = request.form.get("last_three_maintenance")
+    next_three_maintenance = request.form.get("next_three_maintenance")
+    last_three_current_repair = request.form.get("last_three_current_repair")
+    next_three_current_repair = request.form.get("next_three_current_repair")
+    last_two_current_repair = request.form.get("last_two_current_repair")
+    next_two_current_repair = request.form.get("next_two_current_repair")
+    last_one_current_repair = request.form.get("last_one_current_repair")
+    next_one_current_repair = request.form.get("next_one_current_repair")
+    last_medium_repair = request.form.get("last_medium_repair")
+    next_medium_repair = request.form.get("next_medium_repair")
+    last_overhaul = request.form.get("last_overhaul")
+    next_overhaul = request.form.get("next_overhaul")
+    notes = request.form.get("notes")
+    timestamp = request.form.get("timestamp")
+
+    try:
+        loco_model_id = LocomotiveRepairPeriod.query.filter_by(
+            loco_model_name=loco_model_id.strip()).first().id
+    except AttributeError:
+        loco_model_id = 0
 
     loco_model = LocomotiveRepairPeriod.query.get(loco_model_id)
     if not loco_model:
-        return {'Error': 'такой модели не существует.'}
+        flash('Такой модели не существует.', 'error')
+        return redirect(url_for("index"))
 
     new_repair_form = SavedRepairForms(
             loco_model_id=loco_model_id,
@@ -249,7 +261,7 @@ def create_repair_form():
         pass
 
     if last_overhaul:
-        new_repair_form.last_overhaul = datetime.strptime(last_overhaul, '%d/%m/%Y')
+        new_repair_form.last_overhaul = datetime.strptime(last_overhaul, '%Y-%m-%d')
         new_repair_form.next_overhaul = new_repair_form.last_overhaul + timedelta(loco_model.overhaul)
         new_repair_form.next_medium_repair = new_repair_form.last_overhaul + timedelta(loco_model.medium_repair)
         new_repair_form.next_three_current_repair = new_repair_form.last_overhaul + timedelta(loco_model.three_current_repair)
@@ -258,7 +270,7 @@ def create_repair_form():
         new_repair_form.next_three_maintenance = new_repair_form.last_overhaul + timedelta(loco_model.three_maintenance)
 
     if last_medium_repair:
-        new_repair_form.last_medium_repair = datetime.strptime(last_medium_repair, '%d/%m/%Y')
+        new_repair_form.last_medium_repair = datetime.strptime(last_medium_repair, '%Y-%m-%d')
         new_repair_form.next_medium_repair = new_repair_form.last_medium_repair + timedelta(loco_model.medium_repair)
         new_repair_form.next_three_current_repair = new_repair_form.last_medium_repair + timedelta(loco_model.three_current_repair)
         new_repair_form.next_two_current_repair = new_repair_form.last_medium_repair + timedelta(loco_model.two_current_repair)
@@ -266,34 +278,36 @@ def create_repair_form():
         new_repair_form.next_three_maintenance = new_repair_form.last_medium_repair + timedelta(loco_model.three_maintenance)
 
     if last_three_current_repair:
-        new_repair_form.last_three_current_repair = datetime.strptime(last_three_current_repair, '%d/%m/%Y')
+        new_repair_form.last_three_current_repair = datetime.strptime(last_three_current_repair, '%Y-%m-%d')
         new_repair_form.next_three_current_repair = new_repair_form.last_three_current_repair + timedelta(loco_model.three_current_repair)
         new_repair_form.next_two_current_repair = new_repair_form.last_three_current_repair + timedelta(loco_model.two_current_repair)
         new_repair_form.next_one_current_repair = new_repair_form.last_three_current_repair + timedelta(loco_model.one_current_repair)
         new_repair_form.next_three_maintenance = new_repair_form.last_three_current_repair + timedelta(loco_model.three_maintenance)
 
     if last_two_current_repair:
-        new_repair_form.last_two_current_repair = datetime.strptime(last_two_current_repair, '%d/%m/%Y')
+        new_repair_form.last_two_current_repair = datetime.strptime(last_two_current_repair, '%Y-%m-%d')
         new_repair_form.next_two_current_repair = new_repair_form.last_two_current_repair + timedelta(loco_model.two_current_repair)
         new_repair_form.next_one_current_repair = new_repair_form.last_two_current_repair + timedelta(loco_model.one_current_repair)
         new_repair_form.next_three_maintenance = new_repair_form.last_two_current_repair + timedelta(loco_model.three_maintenance)
 
     if last_one_current_repair:
-        new_repair_form.last_one_current_repair = datetime.strptime(last_one_current_repair, '%d/%m/%Y')
+        new_repair_form.last_one_current_repair = datetime.strptime(last_one_current_repair, '%Y-%m-%d')
         new_repair_form.next_one_current_repair = new_repair_form.last_one_current_repair + timedelta(loco_model.one_current_repair)
         new_repair_form.next_three_maintenance = new_repair_form.last_one_current_repair + timedelta(loco_model.three_maintenance)
 
     if last_three_maintenance:
-        new_repair_form.last_three_maintenance = datetime.strptime(last_three_maintenance, '%d/%m/%Y')
+        new_repair_form.last_three_maintenance = datetime.strptime(last_three_maintenance, '%Y-%m-%d')
         new_repair_form.next_three_maintenance = new_repair_form.last_three_maintenance + timedelta(loco_model.three_maintenance)
 
     if new_repair_form.query.filter_by(loco_number=loco_number).first():
-        return {'error': 'Форма для этого тепловоза уже создана.'}
+        flash('Форма для этого тепловоза уже создана.', 'error')
+        return redirect(url_for("index"))
     else:
         db.session.add(new_repair_form)
         db.session.commit()
-
-    return f'Форма для тепловоза {loco_model_id} {loco_number} создана.'
+        flash(f'Форма для тепловоза {loco_model_id} {loco_number} создана.',
+              "success")
+    return redirect(url_for("index"))
 
 
 @app.route('/edit_repair_form', methods=['POST'])
@@ -302,29 +316,33 @@ def edit_repair_form():
     try:
         loco_number = int(request.form["loco_number"])
     except ValueError:
-        return {'Error': 'Номер модели тепловоза должен быть числовым.'}
+        flash('Номер модели тепловоза должен быть числовым.', 'error')
+        return redirect(url_for("index"))
 
-    repair_form_id = request.form["repair_form_id"]
-    loco_model_id = request.form["loco_model_id"]
-    last_three_maintenance = request.form["last_three_maintenance"]
-    last_three_current_repair = request.form["last_three_current_repair"]
-    last_two_current_repair = request.form["last_two_current_repair"]
-    last_one_current_repair = request.form["last_one_current_repair"]
-    last_medium_repair = request.form["last_medium_repair"]
-    last_overhaul = request.form["last_overhaul"]
-    notes = request.form["notes"]
-    timestamp = request.form["timestamp"]
+    repair_form_id = request.form.get("repair_form_id")
+    loco_model_id = request.form.get("loco_model_id")
+    last_three_maintenance = request.form.get("last_three_maintenance")
+    last_three_current_repair = request.form.get("last_three_current_repair")
+    last_two_current_repair = request.form.get("last_two_current_repair")
+    last_one_current_repair = request.form.get("last_one_current_repair")
+    last_medium_repair = request.form.get("last_medium_repair")
+    last_overhaul = request.form.get("last_overhaul")
+    notes = request.form.get("notes")
+    timestamp = request.form.get("timestamp")
 
     old_form = SavedRepairForms.query.filter_by(id=repair_form_id).first_or_404()
     old_form.notes = notes
 
     loco_model = LocomotiveRepairPeriod.query.get(loco_model_id)
     if not loco_model:
-        return {'Error': 'такой модели не существует.'}
+        flash("Такой модели не существует.", "error")
+        return redirect(url_for("index"))
 
     if loco_number != old_form.loco_number:
         if SavedRepairForms.query.filter_by(loco_number=loco_number).first():
-            return f'Форма для тепловоза {loco_number} уже существует.'
+            flash(f'Форма для тепловоза {loco_number} уже существует.',
+                  "error")
+            return redirect(url_for("index"))
         else:
             old_form.loco_number = loco_number
 
@@ -369,16 +387,18 @@ def edit_repair_form():
 
     db.session.commit()
 
-    return "запись изменена."
+    flash("Запись изменена.", "success")
+    return redirect(url_for("index"))
 
-@app.route('/delete_repair_form', methods=['POST'])
-def delete_repair_form():
-    repair_form_id = request.form["repair_form_id"]
-    repair_form = SavedRepairForms.query.filter_by(id=repair_form_id).first_or_404()
+
+@app.route('/delete_repair_form/<id>/', methods=['GET', 'POST'])
+def delete_repair_form(id):
+    repair_form = SavedRepairForms.query.get(id) 
     db.session.delete(repair_form)
     db.session.commit()
+    flash("Форма удалена", "success")
 
-    return f"Форма удалена."
+    return redirect(url_for("index"))
   
 
 @app.route("/loco_model_table", methods=["GET", "POST"])

@@ -1,0 +1,35 @@
+<table class="table table-hover table-striped">
+  <tr>
+    <th>Модель</th>
+    <th>Номер</th>
+    <th colspan="2">ТО-3</th>
+    <th colspan="2">ТР-1</th>
+    <th colspan="2">ТР-2</th>
+    <th colspan="2">ТР-3</th>
+    <th colspan="2">СР</th>
+    <th colspan="2">КР</th>
+    <th>Примечания</th>
+  </tr>
+  {% for row in forms %}
+  <tr>
+    <td>{{row.loco_model_id}}</td>
+    <td>{{row.loco_number}}</td>
+    <td>{{row.last_three_maintenance}}</td>
+    <td>{{row.next_three_maintenance}}</td>
+    <td>{{row.last_three_current_repair}}</td>
+    <td>{{row.next_three_current_repair}}</td>
+    <td>{{row.last_two_current_repair}}</td>
+    <td>{{row.next_two_current_repair}}</td>
+    <td>{{row.last_one_current_repair}}</td>
+    <td>{{row.next_one_current_repair}}</td>
+    <td>{{row.last_medium_repair}}</td>
+    <td>{{row.next_medium_repair}}</td>
+    <td>{{row.last_overhaul}}</td>
+    <td>{{row.next_overhaul}}</td>
+    <td>{{row.notes}}</td>
+    <td>
+      action
+    </td>
+  </tr>
+  {% endfor %}
+</table>

@@ -13,7 +13,9 @@
 
                 </div>
 
+                    {% if models.items %}
                     {% include "auxiliary_templates/loco_model_table_pagination.html" %}
+                    {% endif %}
 
                     {% include "auxiliary_templates/modal_add_model.html" %}
                     
