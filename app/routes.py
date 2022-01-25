@@ -59,7 +59,7 @@ def check_value(value):
     try:
         value = abs(int(value))
     except ValueError:
-        flash(f"{value}: количество дней должно быть целым числом.", "error")
+        flash("Количество дней должно быть целым числом.", "error")
         value = 0
     if value == 0:
         flash("Период проведения ремонта не может быть равен нулю.", "error")
@@ -150,12 +150,6 @@ def edit_model_record():
         medium_repair = request.form["medium_repair"]
         overhaul = request.form["overhaul"]
 
-
-@app.route('/delete_model_record', methods=['POST'])
-def delete_model_record():
-    record_id = request.json.get("record_id")
-    model = LocomotiveRepairPeriod.query.filter_by(id=record_id).first_or_404()
-    db.session.delete(model)
         is_recordable = True
         error = None
         table = LocomotiveRepairPeriod
@@ -213,59 +207,6 @@ def delete__model_record(id):
     flash(f"Модель {record.loco_model_name} удалена.", "success")
     
     return redirect(url_for("loco_model_table"))
-
-
-@app.route('/get_models_list')
-def get_models_list():
-    list_of_models = []
-    for instance in LocomotiveRepairPeriod.query:
-        list_of_models.append([
-            instance.loco_model_name,
-            instance.three_maintenance,
-            instance.one_current_repair,
-            instance.two_current_repair,
-            instance.three_current_repair,
-            instance.medium_repair,
-            instance.overhaul
-            ])
-
-    return str(list_of_models)
-
-
-@app.route('/get_forms_list')
-def get_forms_list():
-    list_of_forms = []
-    for form in SavedRepairForms.query:
-        list_of_forms.append([
-            form.loco_model_id,
-            form.loco_number,
-            form.last_three_maintenance,
-            form.next_three_maintenance,
-            form.last_three_current_repair,
-            form.next_three_current_repair,
-            form.last_two_current_repair,
-            form.next_two_current_repair,
-            form.last_one_current_repair,
-            form.next_one_current_repair,
-            form.last_medium_repair,
-            form.next_medium_repair,
-            form.last_overhaul,
-            form.next_overhaul,
-            form.notes,
-            form.timestamp
-            ])
-
-    # make it pretty    
-    for row in list_of_forms:
-        for i in row:
-             if type(i) == date:
-                row[row.index(i)] = str(i)
-             elif type(i) == datetime:
-                 row[row.index(i)] = i.strftime("%Y-%m-%d %H:%M:%S")
-             elif not bool(i):
-                 row[row.index(i)] = ""
-
-    return str(list_of_forms)
 
   
 @app.route('/create_repair_form', methods=['POST'])
