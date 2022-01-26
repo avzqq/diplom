@@ -1,4 +1,5 @@
-<table class="table table-hover table-striped">
+<div class="table-responsive">
+<table class="table table-hover table-striped table-sm table-bordered">
   <tr>
     <th>Модель</th>
     <th>Номер</th>
@@ -23,8 +24,8 @@
     <td>{% if row.last_overhaul %} {{row.last_overhaul}} {% endif %}</td>
     <td>{{row.notes}}</td>
     <td>
-      <a href="/edit_repair_form" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Изменить</a>
-      <a href="/delete_repair_form/{{row.id}}" class="btn btn-danger btn-xs" onclick="return confirm('Подтвердите удаление')">Удалить</a>
+      <a href="/edit_repair_form" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#modaledit{{row.id}}">Изменить</a>
+      <a href="/delete_repair_form/{{row.id}}" class="btn btn-danger btn-sm" onclick="return confirm('Подтвердите удаление')">Удалить</a>
     </td>
   </tr>  
   <tr>
@@ -44,3 +45,4 @@
 
   {% endfor %}
 </table>
+</div>
