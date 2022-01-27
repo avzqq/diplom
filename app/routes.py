@@ -24,7 +24,7 @@ def index():
         page=page, per_page=ROWS_PER_PAGE)
 
     if current_user.role == 2:
-        admin_status = "Права администратора"
+        admin_status = "(Администратор)"
     else:
         admin_status = None
 
@@ -433,7 +433,7 @@ def loco_model_table():
         page=page, per_page=ROWS_PER_PAGE)
 
     if current_user.role == 2:
-        admin_status = "Права администратора"
+        admin_status = "(Администратор)"
     else:
         admin_status = None
 
