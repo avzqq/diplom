@@ -14,7 +14,7 @@ def admin_required(func):
         elif not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()
         elif not current_user.role == 2:
-            flash('Страница доступна только администраторам.', 'error')
-            return redirect(url_for('index'))
+            flash('Необходимо иметь права администратора', 'error')
+            return redirect(url_for('loco_model_table'))
         return func(*args, **kwargs)
     return decorated_view

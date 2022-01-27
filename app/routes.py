@@ -6,6 +6,7 @@ from app.forms import LoginForm, RegistrationForm
 from app.models import User, LocomotiveRepairPeriod, SavedRepairForms
 from datetime import date, datetime, timedelta
 from config import ROWS_PER_PAGE
+from app.decorators import admin_required
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -76,6 +77,7 @@ def check_value(value):
 
 
 @app.route('/create_model_record', methods=['POST'])
+@admin_required
 def create_model_record():
     if request.method == "POST":
         loco_model_name = request.form["loco_model_name"]
@@ -148,6 +150,7 @@ def create_model_record():
 
 
 @app.route('/edit_model_record', methods=['GET', 'POST'])
+@admin_required
 def edit_model_record():
     if request.method == "POST":
         record_id = request.form["record_id"]
@@ -209,6 +212,7 @@ def edit_model_record():
 
 
 @app.route('/delete_model_record/<id>/', methods=['GET', 'POST'])
+@admin_required
 def delete__model_record(id):
     record = LocomotiveRepairPeriod.query.get(id)
     db.session.delete(record)
