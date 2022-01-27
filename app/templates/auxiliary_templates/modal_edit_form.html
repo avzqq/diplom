@@ -1,0 +1,54 @@
+<div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h4 class="modal-title">Изменить дату последнего ремонта</h4></div>
+      <div class="modal-body">
+        <form action="{{url_for('edit_repair_form')}}" method="POST">
+           <div class="form-group">
+            <label>Модель:</label>
+            <input type="hidden"  name="repair_form_id" value="{{row.id}}">
+            <input type="text" class="form-control" name="loco_model_id" value="{{row.loco_model_id}}">
+           </div>
+           <div class="form-group">
+            <label>Номер тепловоза:</label>
+            <input type="text" class="form-control" name="loco_number" value="{{row.loco_number}}">
+           </div>
+           <div class="form-group">
+            <label>Техническое обслуживание 3:</label>
+            <input type="date" class="form-control" name="last_three_maintenance" value="{{row.last_three_maintenance}}">
+           </div>
+           <div class="form-group">
+            <label>Технический ремонт 1:</label>
+            <input type="date" class="form-control" name="last_one_current_repair" value="{{row.last_one_current_repair}}">
+           </div>
+           <div class="form-group">
+            <label>Технический ремонт 2:</label>
+            <input type="date" class="form-control" name="last_two_current_repair" value="{{row.last_two_current_repair}}">
+           </div>
+           <div class="form-group">
+            <label>Технический ремонт 3:</label>
+            <input type="date" class="form-control" name="last_three_current_repair" value="{{row.last_three_current_repair}}">
+           </div>
+           <div class="form-group">
+            <label>Средний ремонт:</label>
+            <input type="date" class="form-control" name="last_medium_repair" value="{{row.last_medium_repair}}">
+           </div>
+           <div class="form-group">
+            <label>Капитальный ремонт:</label>
+            <input type="date" class="form-control" name="last_overhaul" value="{{row.last_overhaul}}">
+           </div>
+           <div class="form-group">
+            <label>Примечания:</label>
+            <input type="text" class="form-control" name="notes" value="{{row.notes}}">
+           </div>
+           <div class="form-group">
+            <button class="btn btn-primary" type="submit">Подтвердить изменение</button>
+          </div> 
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
