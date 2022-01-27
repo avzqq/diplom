@@ -23,7 +23,15 @@ def index():
     paged_data = SavedRepairForms.query.paginate(
         page=page, per_page=ROWS_PER_PAGE)
 
-    return render_template("index.html", forms=paged_data)
+    if current_user.role == 2:
+        admin_status = "Права администратора"
+    else:
+        admin_status = None
+
+    return render_template("index.html", forms=paged_data,
+                          title="Учёт ремонтов тепловозов",
+                          username=current_user.username,
+                           admin_status=admin_status)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -417,9 +425,19 @@ def delete_repair_form(id):
   
 
 @app.route("/loco_model_table", methods=["GET", "POST"])
+@login_required
 def loco_model_table():
     page = request.args.get("page", 1, type=int)
 
     all_data = LocomotiveRepairPeriod.query.paginate(
         page=page, per_page=ROWS_PER_PAGE)
-    return render_template("loco_model_page.html", models=all_data)
+
+    if current_user.role == 2:
+        admin_status = "Права администратора"
+    else:
+        admin_status = None
+
+    return render_template("loco_model_page.html", models=all_data,
+                          title="Периоды ремонтов тепловозов",
+                          username=current_user.username,
+                          admin_status=admin_status)

@@ -12,15 +12,21 @@
     <meta charset="UTF-8">
 
         {% if title %}
-        <title>{{ title }} - здесь_текст</title>
+        <title>{{ title }}</title>
         {% else %}
         <title>Добро пожаловать!</title>
         {% endif %}
     </head>
     <body>
         <div>
-            здесь_текст:
-            <a href="{{ url_for('index') }}">Домашняя страница</a>
+          {% if username %}
+            Вы вошли как {{ username }}
+          {% endif %}
+          {% if admin_status %}
+            {{ admin_status }}
+          {% endif %}
+            <a href="{{ url_for('index') }}">Учёт</a>
+            <a href="{{ url_for('loco_model_table') }}">Модели</a>
             {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Вход</a>
             {% else %}
